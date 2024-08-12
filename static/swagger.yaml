@@ -1,0 +1,345 @@
+swagger: '2.0'
+info:
+  title: 'E-Commerce API'
+  description: 'An API to manage E-Commerce'
+  version: '1.0.0'
+host: '127.0.0.1:8888'
+schemes:
+  - 'http'
+consumes: 
+  - 'application/json'
+produces:
+  - 'application/json'
+paths: 
+  /token/:
+    post:
+      summary: "Token Endpoint"
+      description: "Endpoint for user authentication"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Credentials for login"
+          required: true
+          schema:
+            $ref: "#/definitions/TokenCredentials"
+      responses:
+        200:
+          description: "Login Successful"
+          schema:
+            $ref: "#/definitions/TokenResponse"
+          examples:
+            application/json:
+              status: "success"
+              messsage: "You have successfully authenticated yourself"
+              token: "eyJhbGciJkeMAK1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTY1Njk1ODUsImaJmMTcxNjU2NTk4NSwic3ViIjoxfQ.qcNLua5V9JHGNdkemandKdkWEUvgSWeuQBR2EMNl7Jo"
+        401:
+          description: "Unsuccessful login"
+          schema:
+            $ref: "#/definitions/TokenResponse"
+          examples:
+            application/json:
+              status: "error"
+              message: "Username and/or password is incorrect"
+  /customers/:
+    post:
+      summary: "Create a new customer"
+      description: "Will add a new customer to the database"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User create object"
+          required: true
+          schema:
+            $ref: "#/definitions/CustomerRequest"
+      responses:
+        201:
+          description: 'Customer Created'
+          schema:
+            $ref: "#/definitions/CustomerResponse"
+    get:
+      summary: "Get all customers"
+      description: "Retrieve a list of all customers"
+      parameters:
+        - in: query
+          name: page
+          type: "integer"
+          description: "Page of the customers"
+          required: false
+        - in: query
+          name: per_page
+          type: "integer"
+          description: "Number of customers per page"
+          required: false
+      responses:
+        200:
+          description: 'Successful Response'
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CustomerResponse"
+    delete:
+      summary: "Delete a customer"
+      description: "Will delete a customer from the database"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User create object"
+          required: true
+          schema:
+            $ref: "#/definitions/CustomerRequest"
+      responses:
+        201:
+          description: 'Customer Deleted'
+          schema:
+            $ref: "#/definitions/CustomerResponse"
+  /orders/:
+    post:
+      summary: "Create Order Endpoint"
+      description: "Creates a new order for the authenticated user"
+      security: 
+        - bearerAuth: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Order object"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              products:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "integer"
+                      example: 1
+                  required:
+                    - id
+            required:
+              - products
+      responses:
+        201:
+          description: "Order Created"
+        400:
+          description: "Invalid Input"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/UnauthorizedError"
+    get:
+      summary: "Get all orders"
+      description: "Retrieve a list of all orders"
+      parameters:
+        - in: query
+          name: page
+          type: "integer"
+          description: "Page of the orders"
+          required: false
+        - in: query
+          name: per_page
+          type: "integer"
+          description: "Number of orders per page"
+          required: false
+      responses:
+        200:
+          description: 'Successful Response'
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/OrderResponse"
+    delete:
+      summary: "Delete an order"
+      description: "Will delete an order from the database"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User create object"
+          required: true
+          schema:
+            $ref: "#/definitions/OrderRequest"
+      responses:
+        201:
+          description: 'Order Deleted'
+          schema:
+            $ref: "#/definitions/OrderResponse"
+  /products/:
+    post:
+      summary: "Create a new product"
+      description: "Will add a new product to the database"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User create object"
+          required: true
+          schema:
+            $ref: "#/definitions/productRequest"
+      responses:
+        201:
+          description: 'Product Created'
+          schema:
+            $ref: "#/definitions/productResponse"
+    get:
+      summary: "Get all products"
+      description: "Retrieve a list of all products"
+      parameters:
+        - in: query
+          name: page
+          type: "integer"
+          description: "Page of the products"
+          required: false
+        - in: query
+          name: per_page
+          type: "integer"
+          description: "Number of products per page"
+          required: false
+      responses:
+        200:
+          description: 'Successful Response'
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ProductResponse"
+    delete:
+      summary: "Delete a product"
+      description: "Will delete a product from the database"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User create object"
+          required: true
+          schema:
+            $ref: "#/definitions/productRequest"
+      responses:
+        201:
+          description: 'Product Deleted'
+          schema:
+            $ref: "#/definitions/productResponse"
+  /cart/:
+    post:
+      summary: "Add an item to the cart"
+      description: "Will add a new item to the cart"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User create object"
+          required: true
+          schema:
+            $ref: "#/definitions/CartRequest"
+      responses:
+        201:
+          description: 'Item added'
+          schema:
+            $ref: "#/definitions/CartResponse"
+    get:
+      summary: "View all items in the cart"
+      description: "Retrieve a list of all items in the cart"
+      parameters:
+        - in: query
+          name: page
+          type: "integer"
+          description: "Page of the items"
+          required: false
+        - in: query
+          name: per_page
+          type: "integer"
+          description: "Number of items per page"
+          required: false
+      responses:
+        200:
+          description: 'Successful Response'
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CartResponse"
+    delete:
+      summary: "Delete an item from the cart"
+      description: "Will delete an item from the cart"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User create object"
+          required: true
+          schema:
+            $ref: "#/definitions/cartRequest"
+      responses:
+        201:
+          description: 'Item Deleted'
+          schema:
+            $ref: "#/definitions/cartResponse"
+definitions: 
+  TokenCredentials:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        description: "The username of the user"
+      password:
+        type: "string"
+        format: "password"
+        description: "The password associated with username"
+    required:
+      - "username"
+      - "password"
+  TokenResponse:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        description: "Status of the operation"
+      message:
+        type: "string"
+        description: "Message indicating the success or failure"
+      token:
+        type: "string"
+        description: "Authenticated token"
+  UnauthorizedError:
+    type: "object"
+    properties:
+      error:
+        type: "string"
+        description: "The description of the error"
+        example: "Invalid token. Please try again"
+  Customer:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Customer's full name"
+        example: "Michael Jordan"
+      email:
+        type: "string"
+        description: "Customer's email address"
+        example: "mj@bulls.com"
+      phone:
+        type: "string"
+        description: "Customer's phone number"
+        example: "(555) 555-4321"
+      username:
+        type: "string"
+        description: "Customer's username"
+        example: "jumpman23"
+  CustomerResponse:
+    allOf:
+      - $ref: '#/definitions/Customer'
+      - type:
+        properties:
+          id:
+            type: "integer"
+            description: "Customer's unique ID"
+            readonly: true
+            example: 23
+  CustomerRequest:
+    allOf:
+      - $ref: "#/definitions/Customer"
+      - type:
+        properties:
+          password:
+            type: "string"
+            description: "Customer's password"
+            example: "6rings!"
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
